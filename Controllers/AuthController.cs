@@ -8,7 +8,19 @@ using CapestoneProject.DTOs.Login.Response;
 using CapestoneProject.DTOs.ResetPassword.Request;
 using System.Data;
 using CapestoneProject.DTOs.SendOTP.Request;
-//
+using System;
+using CapestoneProject.Models;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Generators;
+using static System.Net.WebRequestMethods;
+using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using CapestoneProject.Helpers.JWT;
+using CapestoneProject.Interfaces;
+using Microsoft.Extensions.Configuration.UserSecrets;
+using CapestoneProject.Helpers.HashPassword_UserName;
+
+
 
 namespace CapestoneProject.Controllers
 {
@@ -16,91 +28,81 @@ namespace CapestoneProject.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly ESingleRestaurantManagementSystemContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IEmailServices _emailService;
+
+        public AuthController(ESingleRestaurantManagementSystemContext context, IEmailServices emailService, IConfiguration configuration)
+        {
+            _context = context;
+            _emailService = emailService;
+            _configuration = configuration;
+        }
+
         [HttpPost]
         [Route("signup")] //static route
         public async Task<IActionResult> Signup([FromBody] SignUpInputDTO input)
         {
-            string message = "";
             try
             {
-                //validate input 
-                if (ValidationHelper.IsValidPassword(input.Password) && ValidationHelper.IsValidEmail(input.Email) &&
-                    ValidationHelper.IsValidName(input.FullName) && ValidationHelper.IsValidBirthDate(input.BirthDate) &&
-                    ValidationHelper.IsValidNationalPhoneNumber(input.PhoneNumber) && ValidationHelper.IsValidUserName(input.UserName))
+                if (await _context.Users.AnyAsync(u => u.Email == input.Email || u.PhoneNumber == input.PhoneNumber || u.UserName == input.UserName))
+                    return BadRequest("Email, phone, or username already exists.");
+
+                var user = new User
                 {
-                    string connectionString = "Data Source=DESKTOP-7QLOIQ2\\SQLEXPRESS;Initial Catalog=\"E-Single Restaurant Management System\";Integrated Security=True;Trust Server Certificate=True";
-                    SqlConnection connection = new SqlConnection(connectionString);
-                    SqlCommand command = new SqlCommand("sp_RegisterUser", connection);
-                    command.CommandType = System.Data.CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Full_Name", input.FullName);
-                    command.Parameters.AddWithValue("@UserName", input.UserName);
-                    command.Parameters.AddWithValue("@Birth_Date", input.BirthDate);
-                    command.Parameters.AddWithValue("@Email", input.Email);
-                    command.Parameters.AddWithValue("@Phone_Number", input.PhoneNumber);
-                    command.Parameters.AddWithValue("@PasswordHash", input.Password);
+                    FullName = input.FullName,
+                    UserName = HashPassword_UserName.ComputeSHA512Hash(input.UserName),
+                    Email = input.Email,
+                    PhoneNumber = input.PhoneNumber,
+                    PasswordHash = HashPassword_UserName.ComputeSHA512Hash(input.Password),
+                    BirthDate = input.BirthDate,
+                    CreatedAt = DateTime.UtcNow,
+                    RoleId = 2 //  2 = client 
+                };
 
-                    connection.Open();
-                    var result = command.ExecuteNonQuery();
-                    connection.Close();
-
-                    if (result > 0)
-                        return StatusCode(201, "Your Account Has Been Created!");
-                    else
-                        return StatusCode(400, "Failed to Create Account");
-
-                }
-                return StatusCode(400, "Failed to Create Account");
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                return StatusCode(201, "Account created successfully.");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An Error Was Occured {ex.Message}");
+                return StatusCode(500, $"Signup failed: {ex.Message}");
             }
         }
         [HttpPost]
         [Route("login")] //static route
         public async Task<IActionResult> Login([FromBody] LoginInputDTO input)
         {
-            var User = new LoginOutputDTO();
+            
             try
             {
-                if (string.IsNullOrWhiteSpace(input.Email) || string.IsNullOrWhiteSpace(input.Password))
-                    throw new Exception("Email and Password are required ");
-                string connectionString = "Data Source=DESKTOP-7QLOIQ2\\SQLEXPRESS;Initial Catalog=\"E-Single Restaurant Management System\";Integrated Security=True;Trust Server Certificate=True";
-                SqlConnection connection = new SqlConnection(connectionString);
-                SqlCommand command = new SqlCommand("sp_LoginUser", connection);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Email", input.Email);
-                command.Parameters.AddWithValue("@PasswordHash", input.Password);
+                var hashedPassword = HashPassword_UserName.ComputeSHA512Hash(input.Password);
+                var user = await _context.Users.Where(u => u.Email == input.Email && u.PasswordHash == hashedPassword).FirstOrDefaultAsync();
+                if (user == null)
+                    return Unauthorized("Incorrect email or password.");
 
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        User.UserId = Convert.ToInt32(reader["UserId"]);
-                        User.Role_Id = Convert.ToInt32(reader["Role_Id"]);
-                        User.FullName = reader["Full_Name"].ToString();
-                        User.Email = reader["Email"].ToString();
-                        User.PhoneNumber = reader["Phone_Number"].ToString();
-                        User.UserName = reader["UserName"].ToString();
-                    }
-                    else
-                    {
-                        throw new Exception("Failed to Login! Incorrect Email or Password!"); // Invalid login
-                    }
-                }
-                connection.Close();
+                var token = TokenProvider.GenerateJwtToken(user, _configuration);
+
 
                 var response = new
                 {
-                    Message = $"Welcome {User.UserName}",
-                    User = User
+                    Message = $"Welcome {user.UserName}",
+                    Token = token,
+                    User = new LoginOutputDTO
+                    {
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        UserName = user.UserName,
+                        Role_Id = user.RoleId,
+                        UserId = user.UserId
+                    }
                 };
+
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An Error Was Occured {ex.Message}");
+                return StatusCode(500, $"Login error: {ex.Message}");
             }
         }
 
@@ -109,63 +111,76 @@ namespace CapestoneProject.Controllers
         {
             try
             {
-                // 1. generating the otp
-                string otp = new Random().Next(11111, 99999).ToString();
-                input.OTPCode = otp;
-                input.ExpireOTP = DateTime.Now.AddMinutes(5); // otp expires after 5 minutes
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
+                if (user == null) 
+                    return NotFound("No user with that email.");
 
-                // 2. storing the otp in the database
-                using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-7QLOIQ2\\SQLEXPRESS;Initial Catalog=\"E-Single Restaurant Management System\";Integrated Security=True;Trust Server Certificate=True"))
+                var otp = new Random().Next(10000, 99999).ToString();
+                var otpEntry = new UserOtp
                 {
-                    SqlCommand sendOtpCmd = new SqlCommand("SendOTP", conn);
-                    sendOtpCmd.CommandType = CommandType.StoredProcedure;
-                    sendOtpCmd.Parameters.AddWithValue("@Email", input.Email);
-                    sendOtpCmd.Parameters.AddWithValue("@OTPCode", input.OTPCode);
-                    sendOtpCmd.Parameters.AddWithValue("@ExpireOTP", input.ExpireOTP); // add column to db?
+                    Email = input.Email,
+                    Otpcode = otp,
+                    CreatedAt = DateTime.Now,
+                    ExpirationTime = DateTime.Now.AddMinutes(10),
+                    IsUsed = false
+                };
 
-                    conn.Open();
-                    var result = sendOtpCmd.ExecuteNonQuery();
-                    conn.Close();
+                _context.UserOtps.Add(otpEntry);
+                await _context.SaveChangesAsync();
+                //send email 
+                await _emailService.SendOtpAsync(input.Email, otp);
 
-                    if (result > 0)
-                        return Ok("OTP Sent Successfully");
-                    else
-                        throw new Exception("Failed to Send OTP");
-                }
-                //3.send the otp to the user via email can be done using the same service as the JWT, that is implemented in the OTPHelper class
-
+                return Ok("OTP has been sent to your email.");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An Error Was Occured {ex.Message}");
+                return StatusCode(500, $"Failed to send OTP: {ex.Message}");
             }
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO input)
         {
-            try { 
-                if (string.IsNullOrWhiteSpace(input.Email) || string.IsNullOrWhiteSpace(input.NewPasswordHash) || string.IsNullOrWhiteSpace(input.OTPCode))
-                return BadRequest("Missing data.");
+            try
+            {
+                if (string.IsNullOrWhiteSpace(input.Email) ||
+                    string.IsNullOrWhiteSpace(input.NewPasswordHash) ||
+                    string.IsNullOrWhiteSpace(input.OTPCode))
+                    return BadRequest("Missing required fields.");
 
-                SqlConnection conn = new SqlConnection("Data Source=DESKTOP-7QLOIQ2\\SQLEXPRESS;Initial Catalog=\"E-Single Restaurant Management System\";Integrated Security=True;Trust Server Certificate=True");
-                SqlCommand resetPwdCmd = new SqlCommand("ResetSuperAdminPassword", conn);
-                resetPwdCmd.CommandType = CommandType.StoredProcedure;
-                resetPwdCmd.Parameters.AddWithValue("@Email", input.Email);
-                resetPwdCmd.Parameters.AddWithValue("@NewPasswordHash", input.NewPasswordHash);
-                resetPwdCmd.Parameters.AddWithValue("@OTPCode", input.OTPCode.ToString());
+                // Hash OTP and Password
+                var hashedOtp = HashPassword_UserName.ComputeSHA512Hash(input.OTPCode);
+                var hashedNewPassword = HashPassword_UserName.ComputeSHA512Hash(input.NewPasswordHash);
 
-                conn.Open();
-                var result2 = resetPwdCmd.ExecuteNonQuery();
-                if (!(result2 > 0))
-                    throw new Exception("Can not reset password!");
-                else
-                    return Ok("Password Reset Successfully.");
-                conn.Close();
+                // Validate OTP
+                var otpEntry = await _context.UserOtps
+                    .FirstOrDefaultAsync(o =>
+                        o.Email == input.Email &&
+                        o.Otpcode == hashedOtp &&
+                        o.IsUsed == false &&
+                        o.ExpirationTime > DateTime.Now);
 
-                return Ok(result2);
- 
-            }catch (Exception ex)
+                if (otpEntry == null)
+                    return BadRequest("Invalid or expired OTP.");
+
+                // Get the user
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
+                if (user == null)
+                    return NotFound("User not found.");
+
+                // Prevent password reuse
+                if (user.PasswordHash == hashedNewPassword)
+                    return BadRequest("You cannot reuse your previous password.");
+
+                // Update password and mark OTP as used
+                user.PasswordHash = hashedNewPassword;
+                otpEntry.IsUsed = true;
+
+                await _context.SaveChangesAsync();
+
+                return Ok("Password has been reset successfully.");
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
