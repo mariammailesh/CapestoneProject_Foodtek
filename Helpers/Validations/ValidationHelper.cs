@@ -72,6 +72,7 @@ namespace CapestoneProject.Helpers.Validations
 
             return (age >= 16 ? true : throw new Exception("You must be at least 16 years old to sign up."));
         }
+
         public static bool IsValidNationalPhoneNumber(string phone)
         {
             if (string.IsNullOrWhiteSpace(phone) || string.IsNullOrEmpty(phone))
@@ -82,6 +83,8 @@ namespace CapestoneProject.Helpers.Validations
                 throw new Exception("Phone number must be a valid Jordanian number (e.g., +96279xxxxxxx).");
             return true;
         }
+
+
         public static bool IsValidUserName(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName))
