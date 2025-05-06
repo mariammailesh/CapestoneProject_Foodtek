@@ -87,11 +87,19 @@ builder.Services.AddScoped<IEmailServices, DummyEmailServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
+
     app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//app.UseSwaggerUI(); comment the following code when you want to test it on IIS local device, and keep it when you want to publish it 
+
+app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CapstonePRojectFoodtek");
+        c.RoutePrefix = string.Empty;
+    }
+);
+
+
 
 app.UseHttpsRedirection();
 
