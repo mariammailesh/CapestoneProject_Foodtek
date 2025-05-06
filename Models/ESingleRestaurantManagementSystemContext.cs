@@ -72,8 +72,8 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
     public virtual DbSet<UserOtp> UserOtps { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-7QLOIQ2\\SQLEXPRESS;Database=E-Single Restaurant Management System;Trusted_Connection=True;TrustServerCertificate=True");
+             // => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FB86LSD\\SQLSERVER;Initial Catalog=DummyDb;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            => optionsBuilder.UseSqlServer("Data Source = VAGRANT - MC0J25I\\SQLEXPRESS; Initial Catalog = Team11; User Id = admin; Password=Test@1234;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
