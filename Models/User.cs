@@ -43,6 +43,8 @@ public partial class User
 
     public virtual ICollection<DeliveryLocation> DeliveryLocations { get; set; } = new List<DeliveryLocation>();
 
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+
     public virtual ICollection<IssuesSuggestion> IssuesSuggestions { get; set; } = new List<IssuesSuggestion>();
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
