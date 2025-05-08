@@ -31,6 +31,10 @@ public partial class Item
 
     public DateTime? UpdateDate { get; set; }
 
+    public int ViewCount { get; set; } = 0;
+
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
     public virtual Category Category { get; set; } = null!;

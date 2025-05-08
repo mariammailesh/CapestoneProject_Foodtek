@@ -57,12 +57,20 @@ namespace CapestoneProject.Services
                         Price = Convert.ToDecimal(i.Price),
                         Image = i.Image
                     }).FirstOrDefaultAsync();
+
+            Item UpdatedItem = _context.Items.Where(i => i.ItemId == itemId).FirstOrDefault();
+            if (!(item == null))
+            {
+                UpdatedItem.ViewCount++;
+                _context.Items.Update(UpdatedItem);
+                await _context.SaveChangesAsync();
+            }
             return item;
         }
 
         public async Task<IEnumerable<ItemOutputDTO>> GetItemsByCategoryIdAsync(int categoryId)
         {
-            return await _context.Items
+            var item = await _context.Items
                     .Where(i => i.CategoryId == categoryId)
                     .Select(i => new ItemOutputDTO
                     {
@@ -72,9 +80,17 @@ namespace CapestoneProject.Services
                         DescriptionAr = i.DescriptionAr,
                         DescriptionEn = i.DescriptionEn,
                         Price = Convert.ToDecimal(i.Price),
-                        Image = i.Image
-                    })
-                    .ToListAsync();
+                        Image = i.Image,
+                        ViewCount = i.ViewCount
+                    }).ToListAsync();
+            Item UpdatedItem = _context.Items.Where(i => i.CategoryId == categoryId).FirstOrDefault();
+            if (!(item == null))
+            {
+                UpdatedItem.ViewCount++;
+                _context.Items.Update(UpdatedItem);
+                await _context.SaveChangesAsync();
+            }
+            return item;
         }
 
         public async Task<string> UpdateItemAsync(int id, ItemInputDTO input)
