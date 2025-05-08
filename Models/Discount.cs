@@ -34,7 +34,6 @@ public partial class Discount
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdateDate { get; set; }
-    public string? ImageURL { get; set; }
 
     public virtual ICollection<DiscountCategory> DiscountCategories { get; set; } = new List<DiscountCategory>();
 
