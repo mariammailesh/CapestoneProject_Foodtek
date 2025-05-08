@@ -72,8 +72,8 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
     public virtual DbSet<UserOtp> UserOtps { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-              => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FB86LSD\\SQLSERVER;Initial Catalog=DummyDb;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-           // => optionsBuilder.UseSqlServer("Data Source = VAGRANT - MC0J25I\\SQLEXPRESS; Initial Catalog = Team11; User Id = admin; Password=Test@1234;Trust Server Certificate=True");
+             // => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FB86LSD\\SQLSERVER;Initial Catalog=DummyDb;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            => optionsBuilder.UseSqlServer("Data Source = VAGRANT - MC0J25I\\SQLEXPRESS; Initial Catalog = Team11; User Id = admin; Password=Test@1234;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -486,11 +486,6 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
             entity.HasOne(d => d.Category).WithMany(p => p.Items)
                 .HasForeignKey(d => d.CategoryId)
                 .HasConstraintName("FK__Items__Category___628FA481");
-
-            entity.HasOne(i => i.Rate) // Navigation property in Item
-                .WithMany(r => r.Items) // Navigation property in Rating
-                .HasForeignKey(i => i.RateId) // Foreign key in Item
-                .HasConstraintName("FK_Items_Rating");
         });
 
         modelBuilder.Entity<ItemOption>(entity =>

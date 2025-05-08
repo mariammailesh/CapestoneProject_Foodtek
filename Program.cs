@@ -82,7 +82,7 @@ foreach (var service in builder.Services)
     Log.Information($"Service Registered: {service.ServiceType.FullName} -> {service.ImplementationType?.FullName}");
 }
 
-builder.Services.AddScoped<IEmailServices, DummyEmailService>();
+builder.Services.AddScoped<IEmailServices, DummyEmailServices>();
 
 var app = builder.Build();
 
@@ -90,15 +90,14 @@ var app = builder.Build();
 
 
     app.UseSwagger();
-app.UseSwaggerUI();
-//comment the following code when you want to test it on IIS local device, and keep it when you want to publish it 
+//app.UseSwaggerUI(); comment the following code when you want to test it on IIS local device, and keep it when you want to publish it 
 
-//app.UseSwaggerUI(c =>
-//    {
-//        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CapstonePRojectFoodtek");
-//        c.RoutePrefix = string.Empty;
-//    }
-//);
+app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CapstonePRojectFoodtek");
+        c.RoutePrefix = string.Empty;
+    }
+);
 
 
 

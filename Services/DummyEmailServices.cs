@@ -2,7 +2,7 @@
 
 namespace CapestoneProject.Services
 {
-    public class DummyEmailService : IEmailServices
+    public class DummyEmailServices : IEmailServices
     {
         public Task SendLoginTokenAsync(string email, string token)
         {

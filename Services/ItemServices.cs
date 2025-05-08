@@ -54,7 +54,7 @@ namespace CapestoneProject.Services
                         NameEn = i.NameEn,
                         DescriptionAr = i.DescriptionAr,
                         DescriptionEn = i.DescriptionEn,
-                        Price = (float)i.Price,
+                        Price = Convert.ToDecimal(i.Price),
                         Image = i.Image
                     }).FirstOrDefaultAsync();
 
@@ -79,11 +79,6 @@ namespace CapestoneProject.Services
                         NameEn = i.NameEn,
                         DescriptionAr = i.DescriptionAr,
                         DescriptionEn = i.DescriptionEn,
-
-                        Price = (float)i.Price,
-                        Image = i.Image
-                    })
-                    .ToListAsync();
                         Price = Convert.ToDecimal(i.Price),
                         Image = i.Image,
                         ViewCount = i.ViewCount
@@ -96,7 +91,6 @@ namespace CapestoneProject.Services
                 await _context.SaveChangesAsync();
             }
             return item;
-
         }
 
         public async Task<string> UpdateItemAsync(int id, ItemInputDTO input)
@@ -115,48 +109,6 @@ namespace CapestoneProject.Services
 
             await _context.SaveChangesAsync();
             return "Item Updated Successfully.";
-        }
-
-        //Mariam:
-        public async Task<IEnumerable<ItemOutputDTO>> GetTopRatedItems()
-        {
-            return await _context.Items
-                .OrderBy(i => i.Rate)
-                .Take(10)
-                .Select(i => new ItemOutputDTO
-                {
-                    Id = i.ItemId,
-                    NameAr = i.NameAr,
-                    NameEn = i.NameEn,
-                    DescriptionAr = i.DescriptionAr.ToString(),
-                    DescriptionEn = i.DescriptionEn,
-                    Price = (float)i.Price,
-                    Image = i.Image,
-                    Rate = (i.Rate != null && i.Rate.RatingAmount.HasValue) ? (float)i.Rate.RatingAmount.Value : 0f
-                })
-                .ToListAsync();
-        }
-
-        public Task<IEnumerable<ItemOutputDTO>> GetTopRecommendedItems()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<ItemOutputDTO>> GetItemsByCategoryId(int categoryId)
-        {
-            var item = await _context.Items.Where(i => i.CategoryId == categoryId)
-                .Select(i => new ItemOutputDTO
-                {
-                    Id = i.ItemId,
-                    NameAr = i.NameAr,
-                    NameEn = i.NameEn,
-                    DescriptionAr = i.DescriptionAr,
-                    DescriptionEn = i.DescriptionEn,
-                    Price = (float)i.Price,
-                    Image = i.Image
-                }).ToListAsync();
-
-            return item;
         }
     }
 }

@@ -8,7 +8,7 @@ public partial class Item
     public int ItemId { get; set; }
 
     public int CategoryId { get; set; }
-    public int RateId { get; set; }
+
     public string NameAr { get; set; } = null!;
 
     public string NameEn { get; set; } = null!;
@@ -19,7 +19,7 @@ public partial class Item
 
     public string? Image { get; set; }
 
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
 
     public bool? IsActive { get; set; }
 
@@ -48,6 +48,4 @@ public partial class Item
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual ICollection<Report> Reports { get; set; } = new List<Report>();
-
-    public virtual Rating Rate { get; set; } = null!;
 }
