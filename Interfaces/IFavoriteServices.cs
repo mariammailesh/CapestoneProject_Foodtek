@@ -10,6 +10,7 @@ namespace CapestoneProject.Interfaces
         Task<IEnumerable<FavoriteItemOutputDTO>> GetFavoriteItemByUserIdAsync(int UserId);
         Task<FavoriteItemOutputDTO> GetFavoriteItemByIdAsync(int itemId);
         Task<string> AddItemToFavoriteAsync(FavoriteItemInputDTO FavoriteItem);
-        Task<string> DeleteFavoriteAsync(int id);
+        Task<string> DeleteItemFromFavoriteAsync(FavoriteItemInputDTO input);
+        Task<string> DeleteFavoriteAsync(int UserId);
     }
 }

@@ -36,13 +36,23 @@ namespace CapestoneProject.Services
             return "Item added to favorites.";
         }
 
-        public async Task<string> DeleteFavoriteAsync(int id)
+        public async Task<string> DeleteFavoriteAsync(int UserId)
         {
-            var FavoriteItem = await _context.Favorites.FindAsync(id);
+            var FavoriteItem = await _context.Favorites.Where(x => x.UserId == UserId).SingleOrDefaultAsync();
             if (FavoriteItem == null)
-                return "Item Not Found!";
+                return "Favorite Not Found!";
 
-            _context.Favorites.Remove(FavoriteItem);
+            _context.Remove(FavoriteItem);
+            await _context.SaveChangesAsync();
+            return "Item Removed Successfully!";
+        }
+
+        public async Task<string> DeleteItemFromFavoriteAsync(FavoriteItemInputDTO input)
+        {
+            var item = await _context.Favorites.FirstOrDefaultAsync(f => f.UserId == input.UserId && f.ItemId == input.ItemId);
+            if (item == null)
+                return "Item Not Found in Your Favorites!";
+            _context.Favorites.Remove(item);
             await _context.SaveChangesAsync();
             return "Item Removed Successfully!";
         }
