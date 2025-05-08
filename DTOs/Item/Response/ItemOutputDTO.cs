@@ -7,8 +7,10 @@
         public string NameEn { get; set; }
         public string DescriptionAr { get; set; }
         public string DescriptionEn { get; set; }
-        public decimal Price { get; set; }
+        public float Price { get; set; }
         public string Image { get; set; }
+        public float Rate { get; set; }
         public int ViewCount { get; set; } = 0;
+
     }
 }

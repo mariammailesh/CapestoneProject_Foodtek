@@ -11,6 +11,8 @@ namespace CapestoneProject.Helpers.JWT
 {
     public static class TokenProvider
     {
+        internal static object Gene;
+
         public static string GenerateJwtToken(User user, IConfiguration config)
         {
             var claims = new[]
