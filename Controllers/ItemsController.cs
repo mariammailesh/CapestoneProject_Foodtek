@@ -69,6 +69,31 @@ namespace CapestoneProject.Controllers
                     "An error occurred while retrieving top-rated items");
             }
         }
+        /// <summary>
+        /// Retrieves the top recommended items across all categories
+        /// </summary>
+        /// <returns>A list of top recommended items</returns>
+        /// <response code="200">Returns the list of top recommended items</response>
+        /// <response code="404">If no items are found</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpGet("[action]")]
+        public async Task<ActionResult<IEnumerable<ItemOutputDTO>>> GetTopRecommendedItems()
+        {
+            try
+            {
+                var items = await _itemServices.GetTopRecommendedItems();
+                if (items == null || !items.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "An error occurred while retrieving top recommended items");
+            }
+        }
 
 
     }

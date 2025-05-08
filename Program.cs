@@ -30,6 +30,13 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
+builder.Services.AddDbContext<ESingleRestaurantManagementSystemContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IItemServices, ItemServices>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+
 
 // Setup Log file for Debug/Trace output (low-level runtime logs)
 var debugLogFilePath = "Logs/debug-output.txt";
@@ -38,6 +45,8 @@ var debugLogFileStream = new FileStream(debugLogFilePath, FileMode.Append, FileA
 var debugLogWriter = new StreamWriter(debugLogFileStream) { AutoFlush = true };
 Trace.Listeners.Clear();
 Trace.Listeners.Add(new TextWriterTraceListener(debugLogWriter));
+
+
 
 // Configure Serilog (normal app logs)
 Log.Logger = new LoggerConfiguration()
@@ -90,14 +99,15 @@ var app = builder.Build();
 
 
     app.UseSwagger();
-//app.UseSwaggerUI(); comment the following code when you want to test it on IIS local device, and keep it when you want to publish it 
+app.UseSwaggerUI();
+//comment the following code when you want to test it on IIS local device, and keep it when you want to publish it 
 
-app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CapstonePRojectFoodtek");
-        c.RoutePrefix = string.Empty;
-    }
-);
+//app.UseSwaggerUI(c =>
+//    {
+//        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CapstonePRojectFoodtek");
+//        c.RoutePrefix = string.Empty;
+//    }
+//);
 
 
 
