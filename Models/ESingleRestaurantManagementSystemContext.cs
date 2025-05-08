@@ -72,8 +72,8 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
     public virtual DbSet<UserOtp> UserOtps { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-             // => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FB86LSD\\SQLSERVER;Initial Catalog=DummyDb;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-            => optionsBuilder.UseSqlServer("Data Source = VAGRANT - MC0J25I\\SQLEXPRESS; Initial Catalog = Team11; User Id = admin; Password=Test@1234;Trust Server Certificate=True");
+              => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FB86LSD\\SQLSERVER;Initial Catalog=DummyDb;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+           // => optionsBuilder.UseSqlServer("Data Source = VAGRANT - MC0J25I\\SQLEXPRESS; Initial Catalog = Team11; User Id = admin; Password=Test@1234;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
