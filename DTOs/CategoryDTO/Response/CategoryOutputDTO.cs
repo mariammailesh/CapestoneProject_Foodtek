@@ -1,6 +1,6 @@
 ﻿namespace CapestoneProject.DTOs.CategoryDTO.Response
 {
-    public class CategoryResponseDTO
+    public class CategoryOutputDTO
     {
         public int Id { get; set; } 
         public string NameEn { get; set; }

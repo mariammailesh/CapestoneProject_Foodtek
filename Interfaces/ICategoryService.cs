@@ -4,7 +4,7 @@ namespace CapestoneProject.Interfaces
 {
     public interface ICategoryService
     {
-        Task<List<CategoryResponseDTO>> GetAllActiveCategory();
+        Task<List<CategoryOutputDTO>> GetAllActiveCategory();
         
     }
 }

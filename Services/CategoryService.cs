@@ -12,11 +12,11 @@ namespace CapestoneProject.Services
             _context = context;
         }
 
-        public async Task<List<CategoryResponseDTO>> GetAllActiveCategory()
+        public async Task<List<CategoryOutputDTO>> GetAllActiveCategory()
         {
             var categories = await _context.Categories
                 .Where(c => c.IsActive == true)
-                .Select(c => new CategoryResponseDTO
+                .Select(c => new CategoryOutputDTO
                 {
                     Id = c.CategoryId,
                     NameAr = c.CategoryNameAr,

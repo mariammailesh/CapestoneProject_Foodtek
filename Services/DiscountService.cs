@@ -14,11 +14,11 @@ namespace CapestoneProject.Services
             _context = context;
         }
 
-        public Task<List<DiscountResponseDTO>> GetAllDiscountsAsync()
+        public Task<List<DiscountOutputDTO>> GetAllDiscountsAsync()
         {
             var discounts = _context.Discounts
                 .Where(d => d.IsActive == true)
-                .Select(d => new DiscountResponseDTO
+                .Select(d => new DiscountOutputDTO
                 {
                     Id = d.DiscountId,
                     TitleEn = d.TitleEn,

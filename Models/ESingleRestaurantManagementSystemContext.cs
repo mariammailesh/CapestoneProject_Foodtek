@@ -486,6 +486,11 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
             entity.HasOne(d => d.Category).WithMany(p => p.Items)
                 .HasForeignKey(d => d.CategoryId)
                 .HasConstraintName("FK__Items__Category___628FA481");
+
+            entity.HasOne(i => i.Rate) // Navigation property in Item
+                .WithMany(r => r.Items) // Navigation property in Rating
+                .HasForeignKey(i => i.RateId) // Foreign key in Item
+                .HasConstraintName("FK_Items_Rating");
         });
 
         modelBuilder.Entity<ItemOption>(entity =>

@@ -1,6 +1,6 @@
 ﻿namespace CapestoneProject.DTOs.Discount.Response
 {
-    public class DiscountResponseDTO
+    public class DiscountOutputDTO
     {
        public int Id { get; set; }
        public string? TitleEn { get; set; }

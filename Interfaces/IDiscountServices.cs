@@ -4,7 +4,7 @@ namespace CapestoneProject.Interfaces
 {
     public interface IDiscountServices
     {
-        Task<List<DiscountResponseDTO>> GetAllDiscountsAsync();
+        Task<List<DiscountOutputDTO>> GetAllDiscountsAsync();
         
         //future work
         //Task<Discount> GetDiscountByIdAsync(int id);

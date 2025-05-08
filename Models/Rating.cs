@@ -32,4 +32,6 @@ public partial class Rating
     public virtual User Driver { get; set; } = null!;
 
     public virtual Order? Order { get; set; }
+    public virtual ICollection<Item> Items { get; set; } = new List<Item>();
+
 }
