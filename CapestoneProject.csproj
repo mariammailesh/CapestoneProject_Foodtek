@@ -27,11 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\Cart\Response\" />
     <Folder Include="DTOs\ResetPassword\Response\" />
     <Folder Include="DTOs\SignUp\Response\" />
     <Folder Include="Helpers\Extensions\" />
     <Folder Include="Helpers\Generic\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

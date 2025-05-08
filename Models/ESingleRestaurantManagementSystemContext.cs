@@ -896,6 +896,13 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Ratings__Order_I__2645B050");
+
+            entity.Property(e => e.ItemId).HasColumnName("Item_Id");
+
+            entity.HasOne(e => e.Item)
+                  .WithMany(i => i.Ratings)
+                  .HasForeignKey(e => e.ItemId)
+                  .HasConstraintName("FK_Ratings_Items");
         });
 
         modelBuilder.Entity<Report>(entity =>
