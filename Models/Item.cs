@@ -6,6 +6,7 @@ namespace CapestoneProject.Models;
 public partial class Item
 {
     public int ItemId { get; set; }
+    public int SoldCount { get; set; } = 0;
 
     public int CategoryId { get; set; }
 

@@ -67,32 +67,6 @@ namespace CapestoneProject.Services
             }
             return item;
         }
-
-        public async Task<IEnumerable<ItemOutputDTO>> GetItemsByCategoryIdAsync(int categoryId)
-        {
-            var item = await _context.Items
-                    .Where(i => i.CategoryId == categoryId)
-                    .Select(i => new ItemOutputDTO
-                    {
-                        Id = i.ItemId,
-                        NameAr = i.NameAr,
-                        NameEn = i.NameEn,
-                        DescriptionAr = i.DescriptionAr,
-                        DescriptionEn = i.DescriptionEn,
-                        Price = Convert.ToDecimal(i.Price),
-                        Image = i.Image,
-                        ViewCount = i.ViewCount
-                    }).ToListAsync();
-            Item UpdatedItem = _context.Items.Where(i => i.CategoryId == categoryId).FirstOrDefault();
-            if (!(item == null))
-            {
-                UpdatedItem.ViewCount++;
-                _context.Items.Update(UpdatedItem);
-                await _context.SaveChangesAsync();
-            }
-            return item;
-        }
-
         public async Task<string> UpdateItemAsync(int id, ItemInputDTO input)
         {
             var item = await _context.Items.FindAsync(id);
@@ -110,5 +84,72 @@ namespace CapestoneProject.Services
             await _context.SaveChangesAsync();
             return "Item Updated Successfully.";
         }
+
+
+        //Mariam:
+        public async Task<IEnumerable<ItemOutputDTO>> GetTopRatedItems()
+        {
+            return await _context.Items
+                .GroupJoin(
+                    _context.Ratings,
+                    item => item.ItemId,
+                    rating => rating.ItemId,
+                    (item, ratings) => new
+                    {
+                        Item = item,
+                        AverageRating = ratings.Average(r => r.RatingAmount) ?? 0
+                    })
+                .OrderByDescending(x => x.AverageRating)
+                .Take(10)
+                .Select(x => new ItemOutputDTO
+                {
+                    Id = x.Item.ItemId,
+                    NameAr = x.Item.NameAr,
+                    NameEn = x.Item.NameEn,
+                    DescriptionAr = x.Item.DescriptionAr,
+                    DescriptionEn = x.Item.DescriptionEn,
+                    Price = Convert.ToDecimal(x.Item.Price),
+                    Image = x.Item.Image,
+                    Rate = Convert.ToDecimal(x.AverageRating)
+                })
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<ItemOutputDTO>> GetTopRecommendedItems()
+        {
+            return await _context.Items
+                .OrderBy(i => i.SoldCount)
+                .Take(10)
+                .Select(i => new ItemOutputDTO
+                {
+                    Id = i.ItemId,
+                    NameAr = i.NameAr,
+                    NameEn = i.NameEn,
+                    DescriptionAr = i.DescriptionAr,
+                    DescriptionEn = i.DescriptionEn,
+                    Price = Convert.ToDecimal(i.Price),
+                    Image = i.Image,
+                    SoldCount = i.SoldCount
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ItemOutputDTO>> GetItemsByCategoryId(int categoryId)
+        {
+            var item = await _context.Items.Where(i => i.CategoryId == categoryId)
+                .Select(i => new ItemOutputDTO
+                {
+                    Id = i.ItemId,
+                    NameAr = i.NameAr,
+                    NameEn = i.NameEn,
+                    DescriptionAr = i.DescriptionAr,
+                    DescriptionEn = i.DescriptionEn,
+                    Price = Convert.ToDecimal(i.Price),
+                    Image = i.Image
+                }).ToListAsync();
+
+            return item;
+        }
+
+
     }
 }
