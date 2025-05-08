@@ -1,4 +1,5 @@
-﻿using CapestoneProject.DTOs.Favorite.Request;
+﻿using CapestoneProject.DTOs.Cart.Response;
+using CapestoneProject.DTOs.Favorite.Request;
 using CapestoneProject.DTOs.Favorite.Response;
 using CapestoneProject.DTOs.Request;
 
@@ -8,7 +9,6 @@ namespace CapestoneProject.Interfaces
     {
         Task<string> ClearCart(int cartId);
         Task<string> CreateCart(int personId);
-        Task<string> AddUpdateCart(CartItemInputDTO itemDTO);
-        Task<string> RemoveFromCart(int CartitemId);
+        Task<List<CartItemOutputDTO>> GetCartByUserIdAsync(int userId);
     }
 }

@@ -43,7 +43,7 @@ namespace CapestoneProject.Services
             return "Item Removed Successfully!";
         }
 
-        public async Task<ItemOutputDTO> GetItemByIdAsync(int itemId)
+        public async Task<ItemOutputDTO> GetItemDetailsByIdAsync(int itemId)
         {
             var item = await _context.Items
                     .Where(i => i.ItemId == itemId)
@@ -55,16 +55,15 @@ namespace CapestoneProject.Services
                         DescriptionAr = i.DescriptionAr,
                         DescriptionEn = i.DescriptionEn,
                         Price = Convert.ToDecimal(i.Price),
-                        Image = i.Image
+                        ViewCount = i.ViewCount,
+                        NumberOfReview = _context.Ratings.Count(x => x.ItemId == itemId),
+                        Rate = _context.Ratings.Where(x => x.ItemId == itemId).Average(x => (decimal?) x.RatingAmount)?? 0
                     }).FirstOrDefaultAsync();
 
-            Item UpdatedItem = _context.Items.Where(i => i.ItemId == itemId).FirstOrDefault();
-            if (!(item == null))
-            {
-                UpdatedItem.ViewCount++;
-                _context.Items.Update(UpdatedItem);
-                await _context.SaveChangesAsync();
-            }
+            if (item == null) return null;
+            var IncrementViewCount = await _context.Items.FindAsync(itemId);
+            IncrementViewCount.ViewCount++;         // Increase each time the user review the item
+            await _context.SaveChangesAsync();  
             return item;
         }
         public async Task<string> UpdateItemAsync(int id, ItemInputDTO input)
