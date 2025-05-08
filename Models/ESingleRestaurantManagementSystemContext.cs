@@ -30,7 +30,7 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
     public virtual DbSet<DiscountCategory> DiscountCategories { get; set; }
 
     public virtual DbSet<DiscountItem> DiscountItems { get; set; }
-
+    public virtual DbSet<Favorite> Favorites { get; set; }
     public virtual DbSet<IssuesSuggestion> IssuesSuggestions { get; set; }
 
     public virtual DbSet<Item> Items { get; set; }
@@ -384,6 +384,34 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
                 .HasForeignKey(d => d.ItemId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Discount___Item___3864608B");
+        });
+
+        modelBuilder.Entity<Favorite>(entity =>
+        {
+            entity.HasKey(e => e.FavouriteId).HasName("PK__Favourites__ID");
+
+            entity.Property(e => e.FavouriteId).HasColumnName("FavouriteId");
+
+            entity.Property(e => e.UserId).HasColumnName("User_Id");
+            entity.Property(e => e.ItemId).HasColumnName("Item_Id");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasDefaultValueSql("GETDATE()")
+                .HasColumnName("Created_At");
+
+            // Relationship: Favourite → User (many-to-one)
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.Favorites)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Favourites_Users");
+
+            // Relationship: Favourite → Item (many-to-one)
+            entity.HasOne(d => d.Item)
+                .WithMany(p => p.Favorites)
+                .HasForeignKey(d => d.ItemId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Favourites_Items");
         });
 
         modelBuilder.Entity<IssuesSuggestion>(entity =>

@@ -37,6 +37,8 @@ public partial class Item
 
     public virtual ICollection<DiscountItem> DiscountItems { get; set; } = new List<DiscountItem>();
 
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>(); 
+
     public virtual ICollection<ItemOption> ItemOptions { get; set; } = new List<ItemOption>();
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
