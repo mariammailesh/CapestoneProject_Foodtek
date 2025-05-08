@@ -1,4 +1,5 @@
-﻿using CapestoneProject.DTOs.Request;
+﻿using CapestoneProject.DTOs.Cart.Response;
+using CapestoneProject.DTOs.Request;
 using CapestoneProject.Interfaces;
 using CapestoneProject.Models;
 using Microsoft.EntityFrameworkCore;
@@ -12,35 +13,6 @@ namespace CapestoneProject.Services
         {
             _context = context;
         }
-        public async Task<string> AddUpdateCart(CartItemInputDTO itemDTO)
-        {
-            var cart = await _context.Carts.Where(i => i.CartId == itemDTO.CartId && i.UserId == itemDTO.UserId).FirstOrDefaultAsync();
-            if (cart == null)
-            {
-                return "Cart Not Found or Does Not Belong to This User!";
-            }
-
-            var cartItem = await _context.CartItems.Where(i => i.CartId == itemDTO.CartId && i.ItemId == itemDTO.ItemId).FirstOrDefaultAsync();
-            if (cartItem == null)
-            {
-                var newItem = new CartItem
-                {
-                    CartId = cart.CartId,
-                    ItemId = itemDTO.ItemId,
-                    Quantity = itemDTO.Quantity,
-                    Price = Convert.ToDecimal(itemDTO.TotalPrice),
-                };
-                _context.CartItems.Add(newItem);
-            }
-            else
-            {
-                cartItem.Quantity += itemDTO.Quantity;
-                cartItem.Price = Convert.ToDecimal(itemDTO.TotalPrice);
-            }
-            await _context.SaveChangesAsync();
-            return "Cart Updated Successfully";
-        }
-
         public async Task<string> ClearCart(int cartId)
         {
             var cartItems = await _context.CartItems.Where(c => c.CartId == cartId).ToListAsync();
@@ -65,20 +37,25 @@ namespace CapestoneProject.Services
             await _context.SaveChangesAsync();
             return "Cart Created Successfully";
         }
-        public async Task<string> RemoveFromCart(int CartitemId)
+
+        public async Task<List<CartItemOutputDTO>> GetCartByUserIdAsync(int userId)
         {
+            var cart = await _context.Carts.Include(c => c.CartItems) // First JOIN
+                .ThenInclude(ci => ci.Item).FirstOrDefaultAsync(c => c.UserId == userId); // Secon JOIN
+            // Validate if carts empty or not
+            if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
+                return new List<CartItemOutputDTO>(); // Empty List (No Items) 
 
-            var cartItem = await _context.CartItems.Where(c => c.CartItemId == CartitemId).FirstOrDefaultAsync();
-            if (cartItem == null)
+            return cart.CartItems.Select(ci => new CartItemOutputDTO
             {
-                return "Cart Item Does Not Exist";
-            }
-
-
-            _context.CartItems.Remove(cartItem);
-            await _context.SaveChangesAsync();
-
-            return "Cart Item Removed Successfully";
+                CartItemId = ci.CartItemId,
+                ItemId = ci.ItemId,
+                ItemNameAr = ci.Item.NameAr,
+                ItemNameEn = ci.Item.NameEn,
+                DescriptionAr = ci.Item.DescriptionAr,
+                DescriptionEn = ci.Item.DescriptionEn,
+                Quantity = ci.Quantity
+            }).ToList();
         }
     }
 }

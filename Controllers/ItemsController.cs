@@ -1,5 +1,6 @@
 ﻿using CapestoneProject.DTOs.Item.Response;
 using CapestoneProject.Interfaces;
+using CapestoneProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -95,6 +96,22 @@ namespace CapestoneProject.Controllers
             }
         }
 
+        // Hebah-Afaneh-Dev 
+        [HttpGet("details/{id}")]
+        public async Task<IActionResult> GetItemDetails(int id)
+        {
+            try
+            {
+                var itemDetails = await _itemServices.GetItemDetailsByIdAsync(id);
+                if (itemDetails == null)
+                    return NotFound("Item Not Found.");
 
+                return Ok(itemDetails);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

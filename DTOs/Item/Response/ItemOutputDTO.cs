@@ -9,7 +9,8 @@
         public string DescriptionEn { get; set; }
         public decimal Price { get; set; }
         public string Image { get; set; }
-        public int ViewCount { get; set; } = 0;
+        public int ViewCount { get; set; }
+        public int? NumberOfReview { get; set; }
         public decimal Rate { get; set; } = 0;
         public int SoldCount { get; set; } = 0;
     }
