@@ -27,6 +27,11 @@ public partial class Rating
 
     public DateTime? UpdateDate { get; set; }
 
+    public int ItemId { get; set; }  // maps to Item_Id in DB
+
+    public virtual Item Item { get; set; }  // navigation property
+
+
     public virtual User Client { get; set; } = null!;
 
     public virtual User Driver { get; set; } = null!;
