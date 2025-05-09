@@ -90,8 +90,13 @@ foreach (var service in builder.Services)
 {
     Log.Information($"Service Registered: {service.ServiceType.FullName} -> {service.ImplementationType?.FullName}");
 }
-
+// Hebah-Afaneh-Dev (Configure my own services).
 builder.Services.AddScoped<IEmailServices, DummyEmailServices>();
+builder.Services.AddScoped<ICartServices, CartServices>();
+builder.Services.AddScoped<ICartItemServices, CartItemServices>();
+builder.Services.AddScoped<IFavoriteServices, FavoriteServices>();
+builder.Services.AddScoped<INotificationServices, NotificationServices>();
+builder.Services.AddScoped<IOrderHistoryServices, OrderHistoryServices>();
 
 var app = builder.Build();
 
