@@ -56,7 +56,7 @@ namespace CapestoneProject.Controllers
                     PhoneNumber = input.PhoneNumber,
                     PasswordHash = HashPassword_UserName.ComputeSHA512Hash(input.Password),
                     BirthDate = input.BirthDate,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                     RoleId = 2 //  2 = client 
                 };
 
@@ -115,7 +115,7 @@ namespace CapestoneProject.Controllers
                 if (user == null) 
                     return NotFound("No user with that email.");
 
-                var otp = new Random().Next(10000, 99999).ToString();
+                var otp = new Random().Next(1000, 9999).ToString();
                 var otpEntry = new UserOtp
                 {
                     Email = input.Email,
