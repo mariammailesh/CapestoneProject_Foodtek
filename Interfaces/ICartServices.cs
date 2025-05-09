@@ -7,8 +7,8 @@ namespace CapestoneProject.Interfaces
 {
     public interface ICartServices
     {
-        Task<string> ClearCart(int cartId);
-        Task<string> CreateCart(int personId);
+        //Task<string> ClearCart(int cartId);
+        //Task<string> CreateCart(int personId);
         Task<List<CartItemOutputDTO>> GetCartByUserIdAsync(int userId);
     }
 }

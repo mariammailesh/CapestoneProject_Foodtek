@@ -7,9 +7,6 @@ namespace CapestoneProject.Interfaces
 {
     public interface INotificationServices
     {
-        Task<int> CreateNotificationAsync(NotificationInputDTO input);
-        Task UpdateNotificationAsync(int id, NotificationInputDTO input);
-        Task DeleteNotificationAsync(int id);
         Task<NotificationOutputDTO> GetNotificationByIdAsync(int id);
         Task<IEnumerable<NotificationOutputDTO>> GetAllNotificationsAsync();
 

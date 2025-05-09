@@ -97,6 +97,14 @@ namespace CapestoneProject.Controllers
         }
 
         // Hebah-Afaneh-Dev 
+        /// <summary>
+        /// Retrieves all item details belonging to a specific id
+        /// </summary>
+        /// <param name="itemId">The ID to get item details for</param>
+        /// <returns>An item details in the specified Id</returns>
+        /// <response code="200">Returns the item details based on the Id</response>
+        /// <response code="404">If no item are found based on the Id</response>
+        /// <response code="500">If there was an internal server error</response>
         [HttpGet("details/{id}")]
         public async Task<IActionResult> GetItemDetails(int id)
         {

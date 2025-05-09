@@ -5,10 +5,8 @@ namespace CapestoneProject.Interfaces
 {
     public interface IItemServices
     {
+        // Hebah-Afaneh-Dev
         Task<ItemOutputDTO> GetItemDetailsByIdAsync(int itemId);
-        Task CreateItemAsync(ItemInputDTO item);
-        Task<string> UpdateItemAsync(int id, ItemInputDTO item);
-        Task<string> DeleteItemAsync(int id);
 
         //Mariam:
         Task<IEnumerable<ItemOutputDTO>> GetTopRatedItems();
