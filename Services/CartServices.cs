@@ -13,35 +13,35 @@ namespace CapestoneProject.Services
         {
             _context = context;
         }
-        public async Task<string> ClearCart(int cartId)
-        {
-            var cartItems = await _context.CartItems.Where(c => c.CartId == cartId).ToListAsync();
-            if (!cartItems.Any())
-            {
-                return "Cart is already empty";
-            }
-            _context.CartItems.RemoveRange(cartItems);
-            await _context.SaveChangesAsync();
+        //public async Task<string> ClearCart(int cartId)
+        //{
+        //    var cartItems = await _context.CartItems.Where(c => c.CartId == cartId).ToListAsync();
+        //    if (!cartItems.Any())
+        //    {
+        //        return "Cart is already empty";
+        //    }
+        //    _context.CartItems.RemoveRange(cartItems);
+        //    await _context.SaveChangesAsync();
 
-            return "Cart Cleared Successfully";
-        }
-        public async Task<string> CreateCart(int personId)
-        {
-            var isCartExist = await _context.Carts.AnyAsync(c => c.UserId == personId);
-            if (isCartExist)
-                return "Cart Already Exists";
+        //    return "Cart Cleared Successfully";
+        //}
+        //public async Task<string> CreateCart(int personId)
+        //{
+        //    var isCartExist = await _context.Carts.AnyAsync(c => c.UserId == personId);
+        //    if (isCartExist)
+        //        return "Cart Already Exists";
 
 
-            var cart = new Cart { UserId = personId};
-            _context.Carts.Add(cart);
-            await _context.SaveChangesAsync();
-            return "Cart Created Successfully";
-        }
+        //    var cart = new Cart { UserId = personId};
+        //    _context.Carts.Add(cart);
+        //    await _context.SaveChangesAsync();
+        //    return "Cart Created Successfully";
+        //}
 
         public async Task<List<CartItemOutputDTO>> GetCartByUserIdAsync(int userId)
         {
             var cart = await _context.Carts.Include(c => c.CartItems) // First JOIN
-                .ThenInclude(ci => ci.Item).FirstOrDefaultAsync(c => c.UserId == userId); // Secon JOIN
+                .ThenInclude(ci => ci.Item).FirstOrDefaultAsync(c => c.UserId == userId); // Second JOIN
             // Validate if carts empty or not
             if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
                 return new List<CartItemOutputDTO>(); // Empty List (No Items) 

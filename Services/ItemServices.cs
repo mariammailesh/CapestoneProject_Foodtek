@@ -16,33 +16,7 @@ namespace CapestoneProject.Services
         {
             _context = context;
         }
-        public async Task CreateItemAsync(ItemInputDTO input)
-        {
-            var item = new Item
-            {
-                NameAr = input.NameAr,
-                NameEn = input.NameEn,
-                DescriptionAr = input.DescriptionAr,
-                DescriptionEn = input.DescriptionEn,
-                Price = input.Price,
-                Image = input.Image,
-                CategoryId = input.CategoryId
-            };
-            _context.Items.Add(item);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<string> DeleteItemAsync(int id)
-        {
-            var item = await _context.Items.FindAsync(id);
-            if (item == null)
-                return "Item Not Found!";
-            
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
-            return "Item Removed Successfully!";
-        }
-
+        // Hebah-Afaneh-Dev
         public async Task<ItemOutputDTO> GetItemDetailsByIdAsync(int itemId)
         {
             var item = await _context.Items
@@ -66,24 +40,6 @@ namespace CapestoneProject.Services
             await _context.SaveChangesAsync();  
             return item;
         }
-        public async Task<string> UpdateItemAsync(int id, ItemInputDTO input)
-        {
-            var item = await _context.Items.FindAsync(id);
-            if (item == null)
-                return "Item Not Found.";
-
-            item.NameAr = input.NameAr;
-            item.NameEn = input.NameEn;
-            item.DescriptionAr = input.DescriptionAr;
-            item.DescriptionEn = input.DescriptionEn;
-            item.Price = input.Price;
-            item.Image = input.Image;
-            item.CategoryId = input.CategoryId;
-
-            await _context.SaveChangesAsync();
-            return "Item Updated Successfully.";
-        }
-
 
         //Mariam:
         public async Task<IEnumerable<ItemOutputDTO>> GetTopRatedItems()

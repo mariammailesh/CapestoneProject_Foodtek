@@ -31,7 +31,7 @@ public partial class Order
 
     public virtual User Client { get; set; } = null!;
 
-    public virtual ICollection<DeliveryLocation> DeliveryLocations { get; set; } = new List<DeliveryLocation>();
+    public virtual DeliveryLocation DeliveryLocations { get; set; }
 
     public virtual Discount? Discount { get; set; }
 
