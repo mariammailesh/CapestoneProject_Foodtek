@@ -15,15 +15,20 @@ namespace CapestoneProject.Services
         {
             _context = context;
         }
-
-        public Task<IEnumerable<NotificationOutputDTO>> GetAllNotificationsAsync()
+        public async Task<List<NotificationOutputDTO>> GetAllNotificationByIdAsync(int userId)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<NotificationOutputDTO> GetNotificationByIdAsync(int id)
-        {
-            throw new NotImplementedException();
+            var notification = await (from un in _context.UserNotifications
+                                      join n in _context.Notifications on un.NotificationId equals n.Id
+                                      where un.UserId == userId
+                                      select new NotificationOutputDTO
+                                      {
+                                          Id = n.Id,
+                                          Title = n.Title,
+                                          Content = n.Message,
+                                          Date = n.CreatedAt ?? DateTime.MinValue,
+                                          IsRead = Convert.ToBoolean(un.IsRead)
+                                      }).ToListAsync();
+            return notification;
         }
     }
 }
