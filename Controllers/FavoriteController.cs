@@ -15,7 +15,15 @@ namespace CapestoneProject.Controllers
         {
             _favoriteServices = favoriteServices;
         }
-        [HttpGet("user/{userId}")]
+        /// <summary>
+        /// Retrieves favorite items belonging to a specific userId
+        /// </summary>
+        /// <param name="userId">The ID to get all favorite items for userId</param>
+        /// <returns>A list of favorites based on the specified userId</returns>
+        /// <response code="200">Returns the favorites list based on the Id</response>
+        /// <response code="404">If no favorite is found based on the Id</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpGet("user-favorites/{userId}")]
         public async Task<IActionResult> GetFavoritesByUserId(int userId)
         {
             try

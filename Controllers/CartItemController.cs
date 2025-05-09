@@ -28,7 +28,7 @@ namespace CapestoneProject.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("remove")]
+        [HttpDelete("remove-item/{cartItemId}")]
         public async Task<IActionResult> RemoveItem(int cartItemId)
         {
             try
