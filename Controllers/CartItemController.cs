@@ -15,7 +15,7 @@ namespace CapestoneProject.Controllers
         {
             _cartItemServices = cartItemServices;
         }
-        [HttpPost("add")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> AddOrUpdateItem([FromBody] CartItemInputDTO itemDTO)
         {
             try
@@ -41,7 +41,7 @@ namespace CapestoneProject.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPatch("decrease-quantity")]
+        [HttpPatch("[action]")]
         public async Task<IActionResult> RemoveOnePiece(int userId, int itemId)
         {
             try

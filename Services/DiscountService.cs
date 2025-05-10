@@ -26,8 +26,7 @@ namespace CapestoneProject.Services
                     DescriptionEn = d.DescriptionEn,
                     DescriptionAr = d.DescriptionAr,
                     ImageURL = d.ImageURL
-                })
-                .ToListAsync();
+                }).ToListAsync();
             return discounts;
         }
     }
