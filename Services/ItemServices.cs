@@ -37,7 +37,8 @@ namespace CapestoneProject.Services
             if (item == null) return null;
             var IncrementViewCount = await _context.Items.FindAsync(itemId);
             IncrementViewCount.ViewCount++;         // Increase each time the user review the item
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
+            
             return item;
         }
 

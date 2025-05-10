@@ -40,7 +40,7 @@ namespace CapestoneProject.Controllers
         }
 
         [HttpPost]
-        [Route("signup")] //static route
+        [Route("[action]")] //static route
         public async Task<IActionResult> Signup([FromBody] SignUpInputDTO input)
         {
             try
@@ -70,7 +70,7 @@ namespace CapestoneProject.Controllers
             }
         }
         [HttpPost]
-        [Route("login")] //static route
+        [Route("[action]")] //static route
         public async Task<IActionResult> Login([FromBody] LoginInputDTO input)
         {
             
@@ -106,7 +106,7 @@ namespace CapestoneProject.Controllers
             }
         }
 
-        [HttpPost("send-OTP")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> SendOTP(SendOTPInputDTO input)
         {
             try
@@ -138,7 +138,7 @@ namespace CapestoneProject.Controllers
             }
         }
 
-        [HttpPost("reset-password")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO input)
         {
             try

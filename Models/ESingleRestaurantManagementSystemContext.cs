@@ -264,10 +264,11 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__DeliveryL__Clien__1CBC4616");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.DeliveryLocations)
-                .HasForeignKey(d => d.OrderId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK__DeliveryL__Order__1F98B2C1");
+
+            entity.HasOne(d => d.Order).WithOne(p => p.DeliveryLocations)
+               .HasForeignKey<DeliveryLocation>(d => d.OrderId)
+               .OnDelete(DeleteBehavior.Cascade)
+               .HasConstraintName("FK__DeliveryL__Order__1F98B2C1");
         });
 
         modelBuilder.Entity<Discount>(entity =>

@@ -37,7 +37,7 @@ namespace CapestoneProject.Controllers
             }
         }
 
-        [HttpPost("add")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> AddToFavorite([FromBody] FavoriteItemInputDTO dto)
         {
             try
@@ -51,7 +51,7 @@ namespace CapestoneProject.Controllers
             }
         }
 
-        [HttpDelete("remove")]
+        [HttpDelete("[action]")]
         public async Task<IActionResult> RemoveFromFavorite(FavoriteItemInputDTO dto)
         {
             try

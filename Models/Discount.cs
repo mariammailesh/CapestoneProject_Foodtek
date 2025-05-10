@@ -26,6 +26,7 @@ public partial class Discount
     public int? DiscountStatus { get; set; }
 
     public bool? IsActive { get; set; }
+    public string? ImageURL { get; set; }
 
     public string? CreatedBy { get; set; }
 
