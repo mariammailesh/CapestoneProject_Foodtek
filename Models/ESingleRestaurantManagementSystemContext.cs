@@ -70,6 +70,7 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
     public virtual DbSet<UserNotification> UserNotifications { get; set; }
 
     public virtual DbSet<UserOtp> UserOtps { get; set; }
+    public virtual DbSet<PaymentCard> PaymentCards { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
               => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FB86LSD\\SQLSERVER;Initial Catalog=DummyDb;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
@@ -1172,6 +1173,41 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.UserOtps)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK__UserOTP__User_Id__5F7E2DAC");
+        });
+
+        modelBuilder.Entity<PaymentCard>(entity =>
+        {
+            entity.HasKey(e => e.PaymentCardId);
+
+            entity.Property(e => e.CardNumber)
+                .HasMaxLength(255); // Store encrypted
+
+            entity.Property(e => e.CardHolderName)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.ExpirationMonth)
+                .HasMaxLength(2)
+                .IsRequired();
+
+            entity.Property(e => e.ExpirationYear)
+                .HasMaxLength(4)
+                .IsRequired();
+
+            entity.Property(e => e.CardType)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.LastFourDigits)
+                .HasMaxLength(4);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
+
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.PaymentCards)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);
