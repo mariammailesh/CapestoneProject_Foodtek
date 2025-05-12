@@ -98,14 +98,27 @@ builder.Services.AddScoped<ICartItemServices, CartItemServices>();
 builder.Services.AddScoped<IFavoriteServices, FavoriteServices>();
 builder.Services.AddScoped<INotificationServices, NotificationServices>();
 builder.Services.AddScoped<IOrderHistoryServices, OrderHistoryServices>();
-builder.Services.AddScoped<IUserAuthentication, AuthenticationAppServices>();   
+builder.Services.AddScoped<IUserAuthentication, AuthenticationAppServices>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 
 var app = builder.Build();
 
+app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
 
 
-    app.UseSwagger();
+app.UseSwagger();
 app.UseSwaggerUI();
 //comment the following code when you want to test it on IIS local device, and keep it when you want to publish it 
 
