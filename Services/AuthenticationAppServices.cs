@@ -20,12 +20,12 @@ namespace CapestoneProject.Services
         private readonly IConfiguration _configuration;
         private readonly IEmailServices _emailService;
 
-        public AuthenticationAppServices(IUserAuthentication userAuthentication, ESingleRestaurantManagementSystemContext context, IEmailServices emailService, IConfiguration configuration)
+        public AuthenticationAppServices( ESingleRestaurantManagementSystemContext context, IEmailServices emailService, IConfiguration configuration)
         {
             _context = context;
             _emailService = emailService;
             _configuration = configuration;
-            _userAuthentication = userAuthentication;
+            //_userAuthentication = userAuthentication;
         }
 
         public async Task<bool> ResetUserPassword(ResetPasswordDTO input)

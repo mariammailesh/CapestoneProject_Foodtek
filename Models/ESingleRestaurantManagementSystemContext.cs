@@ -1170,9 +1170,11 @@ public partial class ESingleRestaurantManagementSystemContext : DbContext
                 .HasColumnName("Updated_By");
             entity.Property(e => e.UserId).HasColumnName("User_Id");
 
-            entity.HasOne(d => d.User).WithMany(p => p.UserOtps)
-                .HasForeignKey(d => d.UserId)
+            entity.HasOne(d => d.User)
+                .WithOne(p => p.UserOtps)
+                .HasForeignKey<UserOtp>(d => d.UserId)
                 .HasConstraintName("FK__UserOTP__User_Id__5F7E2DAC");
+           
         });
 
         modelBuilder.Entity<PaymentCard>(entity =>
