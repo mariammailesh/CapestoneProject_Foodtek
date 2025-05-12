@@ -11,30 +11,58 @@ namespace CapestoneProject.Helpers.JWT
 {
     public static class TokenProvider
     {
-        public static string GenerateJwtToken(User user, IConfiguration config)
+        public static string GenerateJwtToken(string userId, string roleName)
         {
-            var claims = new[]
+            // Initialization handler
+            var JWTTokenHandler = new JwtSecurityTokenHandler();
+            // Setup token key : 1- Long secret.    2- Convert secret to bytes.
+            string secret = "LongPrimarySecretForSingleRestaurantManagementApplicationASPCoreModuleForDevelopmentPurposes";
+            var tokenBytesKey = Encoding.UTF8.GetBytes(secret);
+            // Setup token descriptor (claims, expiry, signature)
+            var descriptor = new SecurityTokenDescriptor
             {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.RoleId.ToString()),
-            new Claim("FullName", user.FullName)
-        };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-            var token = new JwtSecurityToken(
-                issuer: config["Jwt:Issuer"],
-                audience: config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(3),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                Expires = DateTime.UtcNow.AddHours(5),
+                Subject = new ClaimsIdentity (new Claim[]
+                {
+                    new Claim("UserId", userId),
+                    new Claim("Role", roleName)
+                }),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenBytesKey), SecurityAlgorithms.HmacSha256Signature)
+            };
+            // Encoding data to a JSON format 
+            var tokenJSON = JWTTokenHandler.CreateToken(descriptor);    
+            // Encoding JSON result as token string 
+            var token = JWTTokenHandler.WriteToken(tokenJSON);
+            return token;
         }
 
+        public static string ISValidToken(string token)
+        {
+            try
+            {
+                // Initialization handler
+                var JWTTokenHandler = new JwtSecurityTokenHandler();
+                // Setup token key : 1- Long secret.    2- Convert secret to bytes.
+                string secret = "LongPrimarySecretForSingleRestaurantManagementApplicationASPCoreModuleForDevelopmentPurposes";
+                var tokenBytesKey = Encoding.UTF8.GetBytes(secret);
+
+                var tokenValidatorParms = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(tokenBytesKey),
+                    ValidateLifetime = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+                var tokenBase = JWTTokenHandler.ValidateToken(token, tokenValidatorParms, out SecurityToken validationToken);
+                return "Valid";
+            }
+            catch(Exception ex)
+            {
+                return $"InValid {ex.Message}";
+            }
+        }
     }
 }
 
