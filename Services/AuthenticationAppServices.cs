@@ -87,7 +87,7 @@ namespace CapestoneProject.Services
             {
                 throw new Exception("Incorrect email, username or password.");
             }
-            var token = TokenProvider.GenerateJwtToken(user, _configuration);
+            var token = TokenProvider.GenerateJwtToken(user.UserId.ToString(), user.Role.NameEn);
             Random random = new Random();
             var otp = random.Next(1111, 9999);
             user.UserOtps.Otpcode = otp.ToString();
@@ -175,7 +175,7 @@ namespace CapestoneProject.Services
 
                 _context.Update(user);
                 await _context.SaveChangesAsync();
-                string jwtToken = TokenProvider.GenerateJwtToken(user, _configuration);
+                string jwtToken = TokenProvider.GenerateJwtToken(user.UserId.ToString(), user.Role.NameEn);
                 return jwtToken;
             }
         }
