@@ -27,6 +27,11 @@ public class PaymentCard
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+    public string Nonce { get; set; }
+    public string Tag { get; set; }
+    public byte[] Key { get; set; }
+
+
 
 
 

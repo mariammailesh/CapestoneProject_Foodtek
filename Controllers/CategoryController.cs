@@ -22,7 +22,7 @@ namespace CapestoneProject.Controllers
         /// <response code="200">Returns the list of categories</response>
         /// <response code="500">If there was an internal server error</response>
         [HttpGet("[action]")]
-        public IActionResult GetAllActiveCategories()
+        public async Task <IActionResult> GetAllActiveCategories()
         {
             try
             {
