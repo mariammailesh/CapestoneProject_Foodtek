@@ -4,6 +4,11 @@ namespace CapestoneProject.Services
 {
     public class DummyEmailServices : IEmailServices
     {
+        //public Task SendEmailAsync(string to, string subject, string body)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
         public Task SendLoginTokenAsync(string email, string token)
         {
             Console.WriteLine($"[EMAIL MOCK] Sent login link with token to {email}: https://yourfrontend.com/confirm-login?token={token}");
