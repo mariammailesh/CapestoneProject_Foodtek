@@ -12,6 +12,7 @@ using CapestoneProject.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using System.Reflection;
 using CapestoneProject.Services;
+using CapestoneProject.Helpers.JWT;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,12 +86,12 @@ builder.Services.AddAuthorization();
 
 //builder.Services.AddSingleton<TokenProvider>();
 
-// After adding services, log them
-//foreach (var service in builder.Services)
-//{
-//    Log.Information($"Service Registered: {service.ServiceType.FullName} -> {service.ImplementationType?.FullName}");
-//}
-// Hebah-Afaneh-Dev (Configure my own services).
+//After adding services, log them
+foreach (var service in builder.Services)
+{
+    Log.Information($"Service Registered: {service.ServiceType.FullName} -> {service.ImplementationType?.FullName}");
+}
+ //Hebah - Afaneh - Dev(Configure my own services).
 builder.Services.AddScoped<IEmailServices, DummyEmailServices>();
 builder.Services.AddScoped<ICartServices, CartServices>();
 builder.Services.AddScoped<ICartItemServices, CartItemServices>();
