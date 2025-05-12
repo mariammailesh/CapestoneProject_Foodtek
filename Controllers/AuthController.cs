@@ -18,7 +18,7 @@ using System.IdentityModel.Tokens.Jwt;
 using CapestoneProject.Helpers.JWT;
 using CapestoneProject.Interfaces;
 using Microsoft.Extensions.Configuration.UserSecrets;
-using CapestoneProject.Helpers.HashPassword_UserName;
+using CapestoneProject.Helpers.HashValues;
 
 
 
@@ -43,6 +43,8 @@ namespace CapestoneProject.Controllers
         [Route("[action]")] 
         public async Task<IActionResult> Signup([FromBody] SignUpInputDTO input)
         {
+            input.Email = HashValues.ComputeHashValues(input.Email);
+            input.UserName = HashValues.ComputeHashValues(input.UserName);
             try
             {
                 if (await _context.Users.AnyAsync(u => u.Email == input.Email || u.PhoneNumber == input.PhoneNumber || u.UserName == input.UserName))
@@ -51,10 +53,10 @@ namespace CapestoneProject.Controllers
                 var user = new User
                 {
                     FullName = input.FullName,
-                    UserName = HashPassword_UserName.ComputeSHA512Hash(input.UserName),
-                    Email = input.Email,
+                    UserName = HashValues.ComputeHashValues(input.UserName),
+                    Email = HashValues.ComputeHashValues(input.Email),
                     PhoneNumber = input.PhoneNumber,
-                    PasswordHash = HashPassword_UserName.ComputeSHA512Hash(input.Password),
+                    PasswordHash = HashValues.ComputeHashValues(input.Password),
                     BirthDate = input.BirthDate,
                     CreatedAt = DateTime.Now,
                     RoleId = 2 //  2 = client 
@@ -73,13 +75,15 @@ namespace CapestoneProject.Controllers
         [Route("[action]")]
         public async Task<IActionResult> Login([FromBody] LoginInputDTO input)
         {
-            
+            input.Email = HashValues.ComputeHashValues(input.Email);
+            input.UserName = HashValues.ComputeHashValues(input.UserName);
+            input.Password = HashValues.ComputeHashValues(input.Password);
+
             try
             {
-                var hashedPassword = HashPassword_UserName.ComputeSHA512Hash(input.Password);
-                var user = await _context.Users.Where(u => u.Email == input.Email && u.PasswordHash == hashedPassword).FirstOrDefaultAsync();
+                var user = await _context.Users.Where(u => (u.Email == input.Email || u.UserName == input.UserName) && u.PasswordHash == input.Password).FirstOrDefaultAsync();
                 if (user == null)
-                    return Unauthorized("Incorrect email or password.");
+                    return Unauthorized("Incorrect email, username or password.");
 
                 var token = TokenProvider.GenerateJwtToken(user, _configuration);
 
@@ -91,8 +95,8 @@ namespace CapestoneProject.Controllers
                     User = new LoginOutputDTO
                     {
                         FullName = user.FullName,
-                        Email = user.Email,
-                        UserName = user.UserName,
+                        Email = HashValues.ComputeHashValues(user.Email),
+                        UserName = HashValues.ComputeHashValues(user.UserName),
                         Role_Id = user.RoleId,
                         UserId = user.UserId
                     }
@@ -107,18 +111,19 @@ namespace CapestoneProject.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> SendOTP(SendOTPInputDTO input)
+        public async Task<IActionResult> SendOTP(string email)
         {
+            email = HashValues.ComputeHashValues(email);
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
                 if (user == null) 
                     return NotFound("No user with that email.");
 
                 var otp = new Random().Next(1000, 9999).ToString();
                 var otpEntry = new UserOtp
                 {
-                    Email = input.Email,
+                    Email = email,
                     Otpcode = otp,
                     CreatedAt = DateTime.Now,
                     ExpirationTime = DateTime.Now.AddMinutes(10),
@@ -128,7 +133,7 @@ namespace CapestoneProject.Controllers
                 _context.UserOtps.Add(otpEntry);
                 await _context.SaveChangesAsync();
                 //send email 
-                await _emailService.SendOtpAsync(input.Email, otp);
+                await _emailService.SendOtpAsync(email, otp);
 
                 return Ok("OTP has been sent to your email.");
             }
@@ -141,6 +146,8 @@ namespace CapestoneProject.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO input)
         {
+            input.Email = HashValues.ComputeHashValues(input.Email);
+            input.NewPasswordHash = HashValues.ComputeHashValues(input.NewPasswordHash);
             try
             {
                 if (string.IsNullOrWhiteSpace(input.Email) ||
@@ -148,15 +155,14 @@ namespace CapestoneProject.Controllers
                     string.IsNullOrWhiteSpace(input.OTPCode))
                     return BadRequest("Missing required fields.");
 
-                // Hash OTP and Password
-                var hashedOtp = HashPassword_UserName.ComputeSHA512Hash(input.OTPCode);
-                var hashedNewPassword = HashPassword_UserName.ComputeSHA512Hash(input.NewPasswordHash);
+                // Hash Password
+                input.NewPasswordHash = HashValues.ComputeHashValues(input.NewPasswordHash);
 
                 // Validate OTP
                 var otpEntry = await _context.UserOtps
                     .FirstOrDefaultAsync(o =>
                         o.Email == input.Email &&
-                        o.Otpcode == hashedOtp &&
+                        o.Otpcode == input.OTPCode &&
                         o.IsUsed == false &&
                         o.ExpirationTime > DateTime.Now);
 
@@ -169,11 +175,11 @@ namespace CapestoneProject.Controllers
                     return NotFound("User not found.");
 
                 // Prevent password reuse
-                if (user.PasswordHash == hashedNewPassword)
+                if (user.PasswordHash == input.NewPasswordHash)
                     return BadRequest("You cannot reuse your previous password.");
 
                 // Update password and mark OTP as used
-                user.PasswordHash = hashedNewPassword;
+                user.PasswordHash = input.NewPasswordHash;
                 otpEntry.IsUsed = true;
 
                 await _context.SaveChangesAsync();
