@@ -34,6 +34,9 @@ public partial class User
     public string? UpdatedBy { get; set; }
 
     public DateTime? UpdateDate { get; set; }
+    public bool IsLoggedIn { get; set; } = false;
+    public DateTime? LastLoginTime { get; set; }
+
 
     public virtual Cart? Cart { get; set; }
 
@@ -69,6 +72,6 @@ public partial class User
 
     public virtual ICollection<UserNotification> UserNotifications { get; set; } = new List<UserNotification>();
 
-    public virtual ICollection<UserOtp> UserOtps { get; set; } = new List<UserOtp>();
+    public virtual UserOtp UserOtps { get; set; }
     public virtual ICollection<PaymentCard> PaymentCards { get; set; }
 }

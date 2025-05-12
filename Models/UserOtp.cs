@@ -11,9 +11,9 @@ public partial class UserOtp
 
     public string Email { get; set; } = null!;
 
-    public string Otpcode { get; set; } = null!;
+    public string? Otpcode { get; set; } = null!;
 
-    public DateTime ExpirationTime { get; set; }
+    public DateTime? ExpirationTime { get; set; }
 
     public bool? IsUsed { get; set; }
 

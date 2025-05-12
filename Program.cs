@@ -98,6 +98,7 @@ builder.Services.AddScoped<ICartItemServices, CartItemServices>();
 builder.Services.AddScoped<IFavoriteServices, FavoriteServices>();
 builder.Services.AddScoped<INotificationServices, NotificationServices>();
 builder.Services.AddScoped<IOrderHistoryServices, OrderHistoryServices>();
+builder.Services.AddScoped<IUserAuthentication, AuthenticationAppServices>();   
 
 var app = builder.Build();
 
