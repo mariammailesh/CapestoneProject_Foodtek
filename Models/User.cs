@@ -70,4 +70,5 @@ public partial class User
     public virtual ICollection<UserNotification> UserNotifications { get; set; } = new List<UserNotification>();
 
     public virtual ICollection<UserOtp> UserOtps { get; set; } = new List<UserOtp>();
+    public virtual ICollection<PaymentCard> PaymentCards { get; set; }
 }

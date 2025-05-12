@@ -86,10 +86,10 @@ builder.Services.AddAuthorization();
 //builder.Services.AddSingleton<TokenProvider>();
 
 // After adding services, log them
-foreach (var service in builder.Services)
-{
-    Log.Information($"Service Registered: {service.ServiceType.FullName} -> {service.ImplementationType?.FullName}");
-}
+//foreach (var service in builder.Services)
+//{
+//    Log.Information($"Service Registered: {service.ServiceType.FullName} -> {service.ImplementationType?.FullName}");
+//}
 // Hebah-Afaneh-Dev (Configure my own services).
 builder.Services.AddScoped<IEmailServices, DummyEmailServices>();
 builder.Services.AddScoped<ICartServices, CartServices>();
