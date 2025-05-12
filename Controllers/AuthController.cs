@@ -40,7 +40,7 @@ namespace CapestoneProject.Controllers
         }
 
         [HttpPost]
-        [Route("[action]")] //static route
+        [Route("[action]")] 
         public async Task<IActionResult> Signup([FromBody] SignUpInputDTO input)
         {
             try
@@ -70,7 +70,7 @@ namespace CapestoneProject.Controllers
             }
         }
         [HttpPost]
-        [Route("[action]")] //static route
+        [Route("[action]")]
         public async Task<IActionResult> Login([FromBody] LoginInputDTO input)
         {
             
