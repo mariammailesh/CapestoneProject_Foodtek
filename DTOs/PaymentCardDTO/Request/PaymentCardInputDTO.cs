@@ -13,6 +13,10 @@ namespace CapestoneProject.DTOs.PaymentCardDTO.Request
         public string CardNumber { get; set; }
 
         [Required]
+        [StringLength(4)]
+        public string LastFourDigits { get; set; } // Last 4 digits of the card number
+
+        [Required]
         [RegularExpression(@"^(0[1-9]|1[0-2])\/([0-9]{2})$")]
         public string ExpiryDate { get; set; }  // MM/YY format
 
@@ -20,7 +24,9 @@ namespace CapestoneProject.DTOs.PaymentCardDTO.Request
         [RegularExpression(@"^[0-9]{3,4}$")]
         public string CVC { get; set; }
 
-        public string? Title { get; set; }      // Optional friendly name
+        public bool IsDefault { get; set; } = true;
+
+
 
     }
 }
