@@ -133,6 +133,7 @@ namespace CapestoneProject.Services
             User.PasswordHash = HashValues.ComputeHashValues(input.Password);
             User.PhoneNumber = input.PhoneNumber;
             User.FullName = input.FullName;
+            User.BirthDate = input.BirthDate;   
             User.CreatedBy = "System";
             User.CreatedAt = DateTime.Now;
             User.RoleId = 2; // client Id = 2
